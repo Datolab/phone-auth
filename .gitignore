@@ -2,4 +2,5 @@
 .env
 /frontend/dist/
 /frontend/public/js/main.js
+/frontend/elm/elm-stuff/
 /database/migrations/
