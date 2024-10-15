@@ -1,0 +1,17 @@
+CREATE TABLE users (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    phone VARCHAR(15) UNIQUE,
+    telegram_id BIGINT UNIQUE,
+    username VARCHAR(255),
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE otps (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    phone VARCHAR(15),
+    otp VARCHAR(255),
+    expires_at DATETIME,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    INDEX (phone),
+    FOREIGN KEY (phone) REFERENCES users(phone) ON DELETE CASCADE
+);

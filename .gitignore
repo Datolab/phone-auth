@@ -1,0 +1,5 @@
+/backend/vendor/
+.env
+/frontend/dist/
+/frontend/public/js/main.js
+/database/migrations/
