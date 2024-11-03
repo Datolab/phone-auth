@@ -17,7 +17,7 @@ class BaseController
         $this->jwtExpiration = $config['app']['jwt_expiration'];
 
         // Add CORS headers
-        header("Access-Control-Allow-Origin: http://localhost:8001");
+        header("Access-Control-Allow-Origin: {$this->allowedOrigin}");
         header("Access-Control-Allow-Methods: POST, GET, OPTIONS");
         header("Access-Control-Allow-Headers: Content-Type");
 
