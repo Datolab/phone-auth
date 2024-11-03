@@ -38,4 +38,23 @@ class BaseController
         }
         return $data;
     }
+
+    protected function getRequestHeaders()
+    {
+        // Check if the function getallheaders() is available
+        if (function_exists('getallheaders')) {
+            return getallheaders();
+        }
+
+        // Fallback for servers without getallheaders()
+        $headers = [];
+        foreach ($_SERVER as $name => $value) {
+            if (substr($name, 0, 5) === 'HTTP_') {
+                // Convert header names to a more conventional format
+                $headerName = str_replace(' ', '-', ucwords(strtolower(str_replace('_', ' ', substr($name, 5)))));
+                $headers[$headerName] = $value;
+            }
+        }
+        return $headers;
+    }
 }

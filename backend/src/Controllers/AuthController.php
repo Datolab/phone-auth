@@ -109,14 +109,33 @@ class AuthController extends BaseController
         }
     }
 
-    public function validateToken($token)
+    public function validateToken()
     {
+        // Get request headers using the BaseController's getRequestHeaders method
+        $headers = $this->getRequestHeaders();
+        
+        // Check if the Authorization header is present
+        if (!isset($headers['Authorization'])) {
+            http_response_code(401);
+            echo json_encode(['error' => 'Authorization header missing']);
+            exit;
+        }
+    
+        // Extract the token from "Bearer <token>"
+        list($type, $token) = explode(" ", $headers['Authorization'], 2);
+        if (strcasecmp($type, 'Bearer') !== 0 || empty($token)) {
+            http_response_code(401);
+            echo json_encode(['error' => 'Invalid authorization format']);
+            exit;
+        }
+    
+        // Decode and validate the token
         try {
-            $decoded = JWT::decode($token, $this->jwtSecretKey, ['HS256']);
-            return (array) $decoded;
+            $decoded = \Firebase\JWT\JWT::decode($token, $this->jwtSecretKey, ['HS256']);
+            return (array) $decoded; // Convert to an array for easy access
         } catch (Exception $e) {
             http_response_code(401);
-            echo json_encode(['error' => 'Invalid token', 'message' => $e->getMessage()]);
+            echo json_encode(['error' => 'Invalid or expired token', 'message' => $e->getMessage()]);
             exit;
         }
     }
