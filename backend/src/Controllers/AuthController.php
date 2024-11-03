@@ -75,11 +75,9 @@ class AuthController extends BaseController
 
     public function verifyOTP()
     {
-        // Get the raw POST data
         $data = $this->getJsonInput();
-        if ($data === null) return; // Exit if JSON is invalid
+        if ($data === null) return;
 
-        // Get phone number and OTP from the decoded JSON
         $phone = $data['phone'] ?? null;
         $otpCode = $data['otp'] ?? null;
 
@@ -89,19 +87,37 @@ class AuthController extends BaseController
             return;
         }
 
-        // Verify OTP
         $smsService = new SMSService();
         if ($smsService->verifyOTP($phone, $otpCode)) {
-            // Authenticate user (e.g., create session or JWT)
             $user = User::findOrCreateByPhone($phone);
-            // Example: Create a session
-            session_start();
-            $_SESSION['user_id'] = $user->id;
 
-            echo json_encode(['message' => 'Authentication successful']);
+            $issuedAt = time();
+            $expirationTime = $issuedAt + $this->jwtExpiration;
+            $payload = [
+                'iat' => $issuedAt,
+                'exp' => $expirationTime,
+                'sub' => $user->id,
+                'phone' => $phone
+            ];
+
+            $jwt = JWT::encode($payload, $this->jwtSecretKey, 'HS256');
+
+            echo json_encode(['token' => $jwt, 'expires_in' => $this->jwtExpiration]);
         } else {
             http_response_code(401);
             echo json_encode(['error' => 'Invalid or expired OTP']);
+        }
+    }
+
+    public function validateToken($token)
+    {
+        try {
+            $decoded = JWT::decode($token, $this->jwtSecretKey, ['HS256']);
+            return (array) $decoded;
+        } catch (Exception $e) {
+            http_response_code(401);
+            echo json_encode(['error' => 'Invalid token', 'message' => $e->getMessage()]);
+            exit;
         }
     }
 }

@@ -1,6 +1,25 @@
-/backend/vendor/
+# Ignore environment configuration
 .env
+
+# Ignore Composer dependencies
+/vendor/
+/backend/vendor/
+
+# Ignore Composer lock if not committing it
+composer.lock
+
+# Ignore frontend build outputs
 /frontend/dist/
-/frontend/public/js/main.js
+/frontend/public/js/
 /frontend/elm/elm-stuff/
+
+# Ignore frontend mock data
+/frontend/mocks/
+
+# Ignore database migrations if they’re not needed in version control
 /database/migrations/
+
+# Optional: OS and temporary files
+.DS_Store
+Thumbs.db
+*.log
